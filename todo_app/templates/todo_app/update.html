@@ -6,27 +6,38 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1 class="text-center">TO-DO LIST UPDATE</h1>
-    <p class="text-center fs-5">This is the update page for your To-Do List.</p>     
+    <h1 class="text-center">UPDATE TO-DO</h1>
+    <p class="text-center fs-5">Update the details of your To-Do item.</p>
 
     <div class="card">
         <div class="card-body">
             <form method="POST">
                 {% csrf_token %}
+                
                 <div class="mb-3">
                     <label for="id_title" class="form-label">To-Do Title</label>
-                    <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}">
-                    {{ form.title.errors }}
+                    <input type="text" name="title" id="id_title" class="form-control" value="{{ form.title.value|default:'' }}" required>
                 </div>
+                
                 <div class="mb-3">
                     <label for="id_description" class="form-label">Description</label>
                     <textarea name="description" id="id_description" class="form-control">{{ form.description.value|default:'' }}</textarea>
-                    {{ form.description.errors }}
                 </div>
+                
+                <div class="mb-3">
+                    <label for="id_priority" class="form-label">Priority</label>
+                    <select class="form-select" name="priority" id="id_priority" required>
+                        <option value="1" {% if form.priority.value == 1 %}selected{% endif %}>Low</option>
+                        <option value="2" {% if form.priority.value == 2 %}selected{% endif %}>Medium</option>
+                        <option value="3" {% if form.priority.value == 3 %}selected{% endif %}>High</option>
+                    </select>
+                </div>
+
                 <div class="mb-3 form-check">
                     <input type="checkbox" name="finished" id="id_finished" class="form-check-input" {% if form.finished.value %}checked{% endif %}>
                     <label class="form-check-label" for="id_finished">Is Finished?</label>
                 </div>                
+                
                 <button type="submit" class="btn btn-success">Update This To-Do</button>
             </form>
         </div>

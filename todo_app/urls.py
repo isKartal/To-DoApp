@@ -3,12 +3,12 @@ from . import views
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
-    path('', views.index, name = "index"),
-    path('about/', views.about, name = "about"),
-    path('create/', views.create, name = "create"),
-    path('delete/<Todos_id>', views.delete, name = "delete"),
-    path('yes_finish/<Todos_id>', views.yes_finish, name = "yes_finish"),
-    path('no_finish/<Todos_id>', views.no_finish, name = "no_finish"),
+    path('', views.index, name="index"),
+    path('about/', views.about, name="about"),
+    path('create/', views.create, name="create"),
+    path('delete/<int:Todos_id>/', views.delete, name="delete"),
+    path('yes_finish/<int:Todos_id>/', views.yes_finish, name="yes_finish"),
+    path('no_finish/<int:Todos_id>/', views.no_finish, name="no_finish"),
     path('update/<int:Todos_id>/', views.update, name='update'),
     path('search/', views.search, name='search'),
     path('register/', views.register, name='register'),

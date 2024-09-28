@@ -18,7 +18,8 @@ def index(request):
     else:
         form = ListForm()
 
-    todo_list = Todos.objects.filter(user=request.user)
+    # Görevleri öncelik seviyesine göre sıralama (yüksekten düşüğe)
+    todo_list = Todos.objects.filter(user=request.user).order_by('-priority', 'date')
 
     search_bar = request.GET.get("q")
     if search_bar:
