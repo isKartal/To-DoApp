@@ -30,10 +30,10 @@
   <table class="table">
     <thead>
       <tr>
-        <th scope="col">To-Do Name</th>
+        <th scope="col">To-Do Title</th>
         <th scope="col">Priority</th>
         <th scope="col">Is Finished?</th>
-        <th scope="col">Date and Time</th>
+        <th scope="col">Due Date</th>
         <th scope="col">Delete</th>
         <th scope="col">Update</th>
       </tr>
@@ -44,21 +44,31 @@
           <td {% if todo.finished %} class="text-decoration-line-through" {% endif %}>{{ todo.title }}</td>
           <td>
             {% if todo.priority == 3 %}
-              <span class="btn btn-danger btn-fixed-size">High</span>
+              <span class="badge bg-danger">High</span>
             {% elif todo.priority == 2 %}
-              <span class="btn btn-warning btn-fixed-size">Medium</span>
+              <span class="badge bg-warning">Medium</span>
             {% else %}
-              <span class="btn btn-success btn-fixed-size">Low</span>
+              <span class="badge bg-success">Low</span>
             {% endif %}
           </td>
           <td>
             {% if todo.finished %}
             <a class="btn btn-success btn-fixed-size" href="{% url 'yes_finish' todo.id %}" role="button">Yes</a>
             {% else %}
-              <a class="btn btn-warning btn-fixed-size" href="{% url 'no_finish' todo.id %}" role="button">No</a>
+              <a class="btn btn-danger btn-fixed-size" href="{% url 'no_finish' todo.id %}" role="button">No</a>
             {% endif %}
           </td>
-          <td>{{ todo.date }}</td>
+          <td>
+            {% if todo.due_date %}
+                {% if todo.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}
+                    <span class="badge bg-danger">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                {% elif todo.due_date|date:'Y-m-d' == today|date:'Y-m-d' %}
+                    <span class="badge bg-warning">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                {% else %}
+                    <span class="badge bg-success">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                {% endif %}
+            {% endif %}
+        </td>
           <td><a class="btn btn-danger btn-fixed-size" href="{% url 'delete' todo.id %}" role="button">Delete</a></td>
           <td><a class="btn btn-info btn-fixed-size" href="{% url 'update' todo.id %}" role="button">Update</a></td>
         </tr>

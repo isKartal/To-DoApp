@@ -4,4 +4,4 @@ from .models import Todos
 class ListForm(forms.ModelForm):
     class Meta:
         model = Todos
-        fields = ["title", "description", "finished", "priority"]
+        fields = ["title", "description", "finished", "priority", "due_date"]

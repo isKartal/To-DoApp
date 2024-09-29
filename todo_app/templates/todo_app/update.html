@@ -23,6 +23,11 @@
                     <label for="id_description" class="form-label">Description</label>
                     <textarea name="description" id="id_description" class="form-control">{{ form.description.value|default:'' }}</textarea>
                 </div>
+
+                <div class="form-group">
+                    <label for="due_date">Due Date:</label>
+                    <input type="datetime-local" name="due_date" id="id_due_date" class="form-control" value="{{ form.due_date.value|default:''|date:"Y-m-d\TH:i" }}" required>
+                </div>
                 
                 <div class="mb-3">
                     <label for="id_priority" class="form-label">Priority</label>

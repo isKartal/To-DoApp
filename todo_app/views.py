@@ -4,6 +4,7 @@ from .forms import ListForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 
 @login_required(login_url="/login/")
 def index(request):
@@ -18,17 +19,27 @@ def index(request):
     else:
         form = ListForm()
 
-    # Görevleri öncelik seviyesine göre sıralama (yüksekten düşüğe)
-    todo_list = Todos.objects.filter(user=request.user).order_by('-priority', 'date')
+    todo_list = Todos.objects.filter(user=request.user).order_by('-priority', 'due_date')
 
     search_bar = request.GET.get("q")
     if search_bar:
         todo_list = todo_list.filter(title__icontains=search_bar)
 
+    today = timezone.now().date()
+
+    overdue_tasks = todo_list.filter(due_date__lt=today, finished=False)
+    if overdue_tasks.exists():
+        messages.warning(request, f'{overdue_tasks.count()} adet görev son tarihi geçmiş durumda!')
+
+    upcoming_tasks = todo_list.filter(due_date=today, finished=False)
+    if upcoming_tasks.exists():
+        messages.info(request, f'{upcoming_tasks.count()} adet görev bugün için planlanmış!')
+
     context = {
         "todo_list": todo_list,
         "search_bar": search_bar,
-        "form": form
+        "form": form,
+        "today": today,
     }
     return render(request, "todo_app/index.html", context)
 
@@ -90,7 +101,6 @@ def update(request, Todos_id):
         form = ListForm(instance=todo_item)
     
     return render(request, "todo_app/update.html", {'form': form, 'todo': todo_item})
-
 
 @login_required(login_url="/login/")
 def search(request):

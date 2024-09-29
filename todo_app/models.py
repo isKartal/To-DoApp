@@ -16,6 +16,7 @@ class Todos(models.Model):
     finished = models.BooleanField(default=False)
     date = models.DateTimeField(default=timezone.now, blank=True)
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=2)
+    due_date = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return self.title
