@@ -18,13 +18,13 @@
 
 <div class="p-5 mb-4 bg-light rounded-3">
   <div class="container-fluid py-5">
-    <h1 class="display-5 fw-bold text-center">TO-DO LIST</h1>
-    <p class="display-7 text-center">This is To-Do List for Python Django Web Development</p>
     <div class="text-center"> 
       <a class="btn btn-primary" href="{% url 'create' %}" role="button">Create New To-Do</a>    
     </div>
+    <h1 class="display-5 fw-bold text-center" style="margin-top: 50px; margin-bottom: -50px;">MY TO-DO LIST</h1>
   </div>
 </div>
+
 
 <div class="container">
   <table class="table">
@@ -41,7 +41,7 @@
     <tbody>
       {% for todo in todo_list %}
         <tr {% if todo.finished %} class="table-success" {% endif %}>
-          <td {% if todo.finished %} class="text-decoration-line-through" {% endif %}>{{ todo.title }}</td>
+          <td {% if todo.finished %}{% endif %}>{{ todo.title }}</td>
           <td>
             {% if todo.priority == 3 %}
               <span class="badge bg-danger">High</span>
