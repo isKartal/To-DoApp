@@ -14,6 +14,17 @@
       font-size: 0.8rem; /* Buton üzerindeki yazı boyutu */
       padding: 0; /* Butonun iç boşluğunu kaldırmak için */
   }
+
+  /* Link stilini değiştirme */
+  a {
+      color: inherit; /* Varsayılan yazı rengini kullanır */
+      text-decoration: none; /* Alt çizgiyi kaldırır */
+  }
+
+  a:hover {
+      color: #007bff; /* Üzerine gelince mavi olur, isteğe göre değiştirilebilir */
+      text-decoration: underline; /* Üzerine gelince alt çizgi eklenir */
+  }
 </style>
 
 <div class="p-5 mb-4 bg-light rounded-3">
@@ -24,7 +35,6 @@
     <h1 class="display-5 fw-bold text-center" style="margin-top: 50px; margin-bottom: -50px;">MY TO-DO LIST</h1>
   </div>
 </div>
-
 
 <div class="container">
   <table class="table">
@@ -41,7 +51,11 @@
     <tbody>
       {% for todo in todo_list %}
         <tr {% if todo.finished %} class="table-success" {% endif %}>
-          <td {% if todo.finished %}{% endif %}>{{ todo.title }}</td>
+          <td>
+            <a href="{% url 'task_detail' todo.id %}">
+              {{ todo.title }}
+            </a>
+          </td>
           <td>
             {% if todo.priority == 3 %}
               <span class="badge bg-danger">High</span>
@@ -53,24 +67,24 @@
           </td>
           <td>
             {% if todo.finished %}
-            <a class="btn btn-success btn-fixed-size" href="{% url 'yes_finish' todo.id %}" role="button">Yes</a>
+              <a class="btn btn-success btn-fixed-size" href="{% if todo.id %}{% url 'yes_finish' todo.id %}{% endif %}" role="button">Yes</a>
             {% else %}
-              <a class="btn btn-danger btn-fixed-size" href="{% url 'no_finish' todo.id %}" role="button">No</a>
+              <a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'no_finish' todo.id %}{% endif %}" role="button">No</a>
             {% endif %}
           </td>
           <td>
             {% if todo.due_date %}
-                {% if todo.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}
-                    <span class="badge bg-danger">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-                {% elif todo.due_date|date:'Y-m-d' == today|date:'Y-m-d' %}
-                    <span class="badge bg-warning">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-                {% else %}
-                    <span class="badge bg-success">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-                {% endif %}
+              {% if todo.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}
+                <span class="badge bg-danger">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+              {% elif todo.due_date|date:'Y-m-d' == today|date:'Y-m-d' %}
+                <span class="badge bg-warning">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+              {% else %}
+                <span class="badge bg-success">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+              {% endif %}
             {% endif %}
-        </td>
-          <td><a class="btn btn-danger btn-fixed-size" href="{% url 'delete' todo.id %}" role="button">Delete</a></td>
-          <td><a class="btn btn-info btn-fixed-size" href="{% url 'update' todo.id %}" role="button">Update</a></td>
+          </td>
+          <td><a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'delete' todo.id %}{% endif %}" role="button">Delete</a></td>
+          <td><a class="btn btn-info btn-fixed-size" href="{% if todo.id %}{% url 'update' todo.id %}{% endif %}" role="button">Update</a></td>
         </tr>
       {% endfor %}
     </tbody>

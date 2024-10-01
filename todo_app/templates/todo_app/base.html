@@ -39,8 +39,8 @@
                 <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {% if not request.user.is_authenticated %}restricted-link{% endif %}" href="{% url 'about' %}">About</a>
-              </li>
+                <a class="nav-link {% if not request.user.is_authenticated %}not-restricted{% endif %}" href="{% url 'about' %}">About</a>
+            </li>
             </ul>
             <form class="d-flex" role="search">
               <input class="form-control me-2" type="search" name="q" value="{{ search_bar|default:'' }}" placeholder="Search To-Do" aria-label="Search">
@@ -51,10 +51,10 @@
               {% if request.user.is_authenticated %}
                 <form method="post" action="{% url 'logout' %}" class="d-inline">
                   {% csrf_token %}
-                  <button type="submit" class="btn btn-outline-danger">Çıkış Yap</button>
+                  <button type="submit" class="btn btn-outline-danger">Logout</button>
                 </form>
               {% else %}
-                <a class="btn btn-outline-primary" href="{% url 'login' %}">Giriş Yap</a>
+                <a class="btn btn-outline-primary" href="{% url 'login' %}">Login</a>
               {% endif %}
             </div>
           </div>
@@ -85,21 +85,21 @@
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         var restrictedLinks = document.querySelectorAll('.restricted-link');
-
+    
         restrictedLinks.forEach(function(link) {
-          link.addEventListener('click', function(event) {
-            event.preventDefault();
-
-            alert("Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!");
-
-            const loginButton = document.querySelector('.btn-outline-primary');
-            if (loginButton) {
-              loginButton.classList.add('btn-warning');
-              loginButton.focus();
-            }
-          });
+            link.addEventListener('click', function(event) {
+                event.preventDefault();
+    
+                alert("Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!");
+    
+                const loginButton = document.querySelector('.btn-outline-primary');
+                if (loginButton) {
+                    loginButton.classList.add('btn-warning');
+                    loginButton.focus();
+                }
+            });
         });
-      });
+    });
     </script>
 </body>
 </html>

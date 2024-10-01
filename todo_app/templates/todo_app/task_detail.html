@@ -1,0 +1,42 @@
+{% extends "todo_app/base.html" %}
+
+{% block title %}
+  {{ todo.title }} Detaylar
+{% endblock title %}
+
+{% block content %}
+<style>
+  .centered-container {
+    display: flex;
+    justify-content: center; /* Yatayda ortala */
+    align-items: center; /* Dikeyde ortala */
+    height: 75vh; /* Ekran yüksekliğini kapla */
+  }
+
+  .content-box {
+    text-align: center; /* İçeriği ortala */
+    padding: 30px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
+  }
+</style>
+
+<div class="centered-container">
+  <div class="content-box">
+    <h2>{{ todo.title }}</h2>
+    <p><strong>Description:</strong> {{ todo.description }}</p>
+    <p><strong>Priority:</strong> {{ todo.get_priority_display }}</p>
+    <p><strong>Due Date:</strong> {{ todo.due_date|date:"Y-m-d H:i" }}</p>
+    <p><strong>Is Finished?:</strong> 
+        {% if todo.finished %}
+          Yes
+        {% else %}
+          No
+        {% endif %}
+      </p>
+    <a href="{% url 'index' %}" class="btn btn-primary">Return to Task List</a>
+  </div>
+</div>
+{% endblock content %}

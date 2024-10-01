@@ -58,10 +58,6 @@ def index(request):
 
 
 def about(request):
-    if not request.user.is_authenticated:
-        messages.info(request, "Bu sayfayı görüntülemek için giriş yapmalısınız.")
-        return redirect('index')
-    
     return render(request, "todo_app/about.html")
 
 def create(request):
@@ -152,3 +148,11 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'users/register.html', {'form': form})
+
+def task_detail(request, Todos_id):
+    if request.user.is_authenticated:
+        todo = get_object_or_404(Todos, pk=Todos_id)
+        return render(request, 'todo_app/task_detail.html', {'todo': todo})
+    else:
+        messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
+        return redirect('login')
