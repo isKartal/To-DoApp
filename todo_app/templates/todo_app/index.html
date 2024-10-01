@@ -25,79 +25,106 @@
       text-decoration: underline;
   }
 
-  .filter-buttons .btn {
-      margin: 5px;
+  .filter-buttons {
+      margin-right: 750px;
+  }
+
+  .container-fluid {
+      padding-left: 25px;  
+      padding-right: 25px;
+  }
+
+  .btn-group > .btn {
+      margin-right: 3px;
+  }
+
+</style>
+
+<div class="p-4 mb-4 bg-light rounded-3">
+  <div class="container-fluid">
+    <h1 class="display-5 fw-bold text-center title-effect">MY TO-DO LIST</h1>
+</div>
+
+<style>
+  .title-effect {
+      color: #007bff; /* Başlık rengi */
+      text-shadow: 2px 2px 4px rgba(0, 123, 255, 0.5); /* Gölge efekti */
+      font-size: 2.5rem; /* Başlık boyutu */
+      letter-spacing: 2px; /* Harfler arası boşluk */
+      transition: transform 0.3s; /* Efekt geçişi */
+  }
+
+  .title-effect:hover {
+      transform: scale(1.05); /* Hover efekti */
   }
 </style>
 
-<div class="p-5 mb-4 bg-light rounded-3">
-  <div class="container-fluid py-5">
-    <div class="text-center">
+    <div class="d-flex justify-content-center align-items-center mb-5">
+      <div class="btn-group filter-buttons">
+        <a href="{% url 'index' %}?filter=all" class="btn btn-info {% if filter_option == 'all' %}active{% endif %}">All</a>
+        <a href="{% url 'index' %}?filter=completed" class="btn btn-success {% if filter_option == 'completed' %}active{% endif %}">Completed</a>
+        <a href="{% url 'index' %}?filter=incomplete" class="btn btn-warning {% if filter_option == 'incomplete' %}active{% endif %}">Incomplete</a>
+      </div>
       <a class="btn btn-primary" href="{% url 'create' %}" role="button">Create New To-Do</a>
     </div>
-    <h1 class="display-5 fw-bold text-center" style="margin-top: 50px; margin-bottom: -50px;">MY TO-DO LIST</h1>
+    
+    <div class="container">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">To-Do Title</th>
+            <th scope="col">Priority</th>
+            <th scope="col">Is Finished?</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Delete</th>
+            <th scope="col">Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for todo in todo_list %}
+            <tr {% if todo.finished %} class="table-success" {% endif %}>
+              <td>
+                <a href="{% url 'task_detail' todo.id %}">{{ todo.title }}</a>
+              </td>
+              <td>
+                {% if todo.priority == 3 %}
+                  <span class="badge bg-danger">High</span>
+                {% elif todo.priority == 2 %}
+                  <span class="badge bg-warning">Medium</span>
+                {% else %}
+                  <span class="badge bg-success">Low</span>
+                {% endif %}
+              </td>
+              <td>
+                {% if todo.finished %}
+                  <a class="btn btn-success btn-fixed-size" href="{% if todo.id %}{% url 'yes_finish' todo.id %}{% endif %}" role="button">Yes</a>
+                {% else %}
+                  <a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'no_finish' todo.id %}{% endif %}" role="button">No</a>
+                {% endif %}
+              </td>
+              <td>
+                {% if todo.due_date %}
+                  {% if todo.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}
+                    <span class="badge bg-danger">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                  {% elif todo.due_date|date:'Y-m-d' == today|date:'Y-m-d' %}
+                    <span class="badge bg-warning">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                  {% else %}
+                    <span class="badge bg-success">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
+                  {% endif %}
+                {% endif %}
+              </td>
+              <td>
+                <a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'delete' todo.id %}{% endif %}" role="button">Delete</a>
+              </td>
+              <td>
+                <a class="btn btn-info btn-fixed-size" href="{% if todo.id %}{% url 'update' todo.id %}{% endif %}" role="button">Update</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-</div>
-
-<div class="filter-buttons text-center">
-  <a href="{% url 'index' %}?filter=all" class="btn btn-info {% if filter_option == 'all' %}active{% endif %}">All</a>
-  <a href="{% url 'index' %}?filter=completed" class="btn btn-success {% if filter_option == 'completed' %}active{% endif %}">Completed</a>
-  <a href="{% url 'index' %}?filter=incomplete" class="btn btn-warning {% if filter_option == 'incomplete' %}active{% endif %}">Incomplete</a>
-</div>
-
-<div class="container">
-  <table class="table">
-    <thead>
-      <tr>
-        <th scope="col">To-Do Title</th>
-        <th scope="col">Priority</th>
-        <th scope="col">Is Finished?</th>
-        <th scope="col">Due Date</th>
-        <th scope="col">Delete</th>
-        <th scope="col">Update</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for todo in todo_list %}
-        <tr {% if todo.finished %} class="table-success" {% endif %}>
-          <td>
-            <a href="{% url 'task_detail' todo.id %}">
-              {{ todo.title }}
-            </a>
-          </td>
-          <td>
-            {% if todo.priority == 3 %}
-              <span class="badge bg-danger">High</span>
-            {% elif todo.priority == 2 %}
-              <span class="badge bg-warning">Medium</span>
-            {% else %}
-              <span class="badge bg-success">Low</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if todo.finished %}
-              <a class="btn btn-success btn-fixed-size" href="{% if todo.id %}{% url 'yes_finish' todo.id %}{% endif %}" role="button">Yes</a>
-            {% else %}
-              <a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'no_finish' todo.id %}{% endif %}" role="button">No</a>
-            {% endif %}
-          </td>
-          <td>
-            {% if todo.due_date %}
-              {% if todo.due_date|date:'Y-m-d' < today|date:'Y-m-d' %}
-                <span class="badge bg-danger">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-              {% elif todo.due_date|date:'Y-m-d' == today|date:'Y-m-d' %}
-                <span class="badge bg-warning">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-              {% else %}
-                <span class="badge bg-success">{{ todo.due_date|date:"Y-m-d H:i" }}</span>
-              {% endif %}
-            {% endif %}
-          </td>
-          <td><a class="btn btn-danger btn-fixed-size" href="{% if todo.id %}{% url 'delete' todo.id %}{% endif %}" role="button">Delete</a></td>
-          <td><a class="btn btn-info btn-fixed-size" href="{% if todo.id %}{% url 'update' todo.id %}{% endif %}" role="button">Update</a></td>
-        </tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </div>
 
 {% endblock content %}

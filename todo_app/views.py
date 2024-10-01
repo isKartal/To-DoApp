@@ -51,6 +51,12 @@ def index(request):
         todo_list = Todos.objects.filter(public=True).order_by('-priority', 'due_date')  
         messages.info(request, "Daha fazla işlem yapmak için giriş yapmalısınız.")
 
+        filter_option = request.GET.get('filter', 'all')
+        if filter_option == 'completed':
+            todo_list = todo_list.filter(finished=True)
+        elif filter_option == 'incomplete':
+            todo_list = todo_list.filter(finished=False)
+
         today = timezone.now().date()
 
         context = {
