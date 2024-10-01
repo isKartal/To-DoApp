@@ -8,32 +8,41 @@
 
 <style>
   .btn-fixed-size {
-      min-width: 50px; /* Butonun minimum genişliği */
-      width: 50px; /* Butonun sabit genişliği */
-      height: 25px; /* Butonun sabit yüksekliği */
-      font-size: 0.8rem; /* Buton üzerindeki yazı boyutu */
-      padding: 0; /* Butonun iç boşluğunu kaldırmak için */
+      min-width: 50px;
+      width: 50px;
+      height: 25px;
+      font-size: 0.8rem;
+      padding: 0;
   }
 
-  /* Link stilini değiştirme */
   a {
-      color: inherit; /* Varsayılan yazı rengini kullanır */
-      text-decoration: none; /* Alt çizgiyi kaldırır */
+      color: inherit;
+      text-decoration: none;
   }
 
   a:hover {
-      color: #007bff; /* Üzerine gelince mavi olur, isteğe göre değiştirilebilir */
-      text-decoration: underline; /* Üzerine gelince alt çizgi eklenir */
+      color: #007bff;
+      text-decoration: underline;
+  }
+
+  .filter-buttons .btn {
+      margin: 5px;
   }
 </style>
 
 <div class="p-5 mb-4 bg-light rounded-3">
   <div class="container-fluid py-5">
-    <div class="text-center"> 
-      <a class="btn btn-primary" href="{% url 'create' %}" role="button">Create New To-Do</a>    
+    <div class="text-center">
+      <a class="btn btn-primary" href="{% url 'create' %}" role="button">Create New To-Do</a>
     </div>
     <h1 class="display-5 fw-bold text-center" style="margin-top: 50px; margin-bottom: -50px;">MY TO-DO LIST</h1>
   </div>
+</div>
+
+<div class="filter-buttons text-center">
+  <a href="{% url 'index' %}?filter=all" class="btn btn-info {% if filter_option == 'all' %}active{% endif %}">All</a>
+  <a href="{% url 'index' %}?filter=completed" class="btn btn-success {% if filter_option == 'completed' %}active{% endif %}">Completed</a>
+  <a href="{% url 'index' %}?filter=incomplete" class="btn btn-warning {% if filter_option == 'incomplete' %}active{% endif %}">Incomplete</a>
 </div>
 
 <div class="container">

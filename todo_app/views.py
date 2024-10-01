@@ -7,7 +7,6 @@ from django.utils import timezone
 
 def index(request):
     if request.user.is_authenticated:
-        # Giriş yapan kullanıcıların görevlerini göster
         if request.method == "POST":
             form = ListForm(request.POST)
             if form.is_valid():
@@ -20,6 +19,12 @@ def index(request):
             form = ListForm()
 
         todo_list = Todos.objects.filter(user=request.user).order_by('-priority', 'due_date')
+        
+        filter_option = request.GET.get('filter', 'all')
+        if filter_option == 'completed':
+            todo_list = todo_list.filter(finished=True)
+        elif filter_option == 'incomplete':
+            todo_list = todo_list.filter(finished=False)
 
         today = timezone.now().date()
 
@@ -40,9 +45,9 @@ def index(request):
             "search_bar": search_bar,
             "form": form,
             "today": today,
+            "filter_option": filter_option,
         }
     else:
-        # Giriş yapmayan kullanıcılar için sadece public görevleri göstereceğiz.
         todo_list = Todos.objects.filter(public=True).order_by('-priority', 'due_date')  
         messages.info(request, "Daha fazla işlem yapmak için giriş yapmalısınız.")
 
@@ -55,7 +60,6 @@ def index(request):
         }
 
     return render(request, "todo_app/index.html", context)
-
 
 def about(request):
     return render(request, "todo_app/about.html")
@@ -73,14 +77,17 @@ def create(request):
         else:
             messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
 
-    form = ListForm()  # Formu her zaman göster
+    form = ListForm()
     return render(request, "todo_app/create.html", {'form': form})
 
 def delete(request, Todos_id):
     if request.user.is_authenticated:
         todo = get_object_or_404(Todos, pk=Todos_id)
-        todo.delete()
-        messages.success(request, 'Todo başarıyla silindi.')
+        if todo.user == request.user:
+            todo.delete()
+            messages.success(request, 'Todo başarıyla silindi.')
+        else:
+            messages.error(request, "Bu görevi silme yetkiniz yok.")
     else:
         messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
     
@@ -89,9 +96,12 @@ def delete(request, Todos_id):
 def yes_finish(request, Todos_id):
     if request.user.is_authenticated:
         todo = get_object_or_404(Todos, pk=Todos_id)
-        todo.finished = False
-        todo.save()
-        messages.success(request, 'Todo tamamlanmamış olarak işaretlendi.')
+        if todo.user == request.user:
+            todo.finished = False
+            todo.save()
+            messages.success(request, 'Todo tamamlanmamış olarak işaretlendi.')
+        else:
+            messages.error(request, "Bu görevi değiştirme yetkiniz yok.")
     else:
         messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
     
@@ -100,9 +110,12 @@ def yes_finish(request, Todos_id):
 def no_finish(request, Todos_id):
     if request.user.is_authenticated:
         todo = get_object_or_404(Todos, pk=Todos_id)
-        todo.finished = True
-        todo.save()
-        messages.success(request, 'Todo tamamlanmış olarak işaretlendi.')
+        if todo.user == request.user:
+            todo.finished = True
+            todo.save()
+            messages.success(request, 'Todo tamamlanmış olarak işaretlendi.')
+        else:
+            messages.error(request, "Bu görevi değiştirme yetkiniz yok.")
     else:
         messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
     
@@ -111,21 +124,23 @@ def no_finish(request, Todos_id):
 def update(request, Todos_id):
     if request.user.is_authenticated:
         todo_item = get_object_or_404(Todos, pk=Todos_id)
-        
-        if request.method == "POST":
-            form = ListForm(request.POST, instance=todo_item)
-            if form.is_valid():
-                form.save()
-                messages.success(request, 'Todo başarıyla güncellendi.')
-                return redirect("index")
+        if todo_item.user == request.user:
+            if request.method == "POST":
+                form = ListForm(request.POST, instance=todo_item)
+                if form.is_valid():
+                    form.save()
+                    messages.success(request, 'Todo başarıyla güncellendi.')
+                    return redirect("index")
+                else:
+                    messages.error(request, "Formda hatalar var. Lütfen kontrol edin.")
             else:
-                messages.error(request, "Formda hatalar var. Lütfen kontrol edin.")
+                form = ListForm(instance=todo_item)
+            return render(request, "todo_app/update.html", {'form': form, 'todo': todo_item})
         else:
-            form = ListForm(instance=todo_item)
-        
-        return render(request, "todo_app/update.html", {'form': form, 'todo': todo_item})
-    
-    messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
+            messages.error(request, "Bu görevi güncelleme yetkiniz yok.")
+    else:
+        messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
+
     return redirect("index")
 
 def search(request):
@@ -152,7 +167,11 @@ def register(request):
 def task_detail(request, Todos_id):
     if request.user.is_authenticated:
         todo = get_object_or_404(Todos, pk=Todos_id)
-        return render(request, 'todo_app/task_detail.html', {'todo': todo})
+        if todo.user == request.user:
+            return render(request, 'todo_app/task_detail.html', {'todo': todo})
+        else:
+            messages.error(request, "Bu görevin detaylarını görüntüleme yetkiniz yok.")
     else:
         messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
-        return redirect('login')
+    
+    return redirect('login')
