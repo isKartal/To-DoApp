@@ -4,6 +4,7 @@ from .forms import ListForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.utils import timezone
+from .models import UploadedFile
 
 def index(request):
     if request.user.is_authenticated:
@@ -73,13 +74,23 @@ def about(request):
 def create(request):
     if request.method == "POST":
         if request.user.is_authenticated:
-            form = ListForm(request.POST)
+            form = ListForm(request.POST, request.FILES)
             if form.is_valid():
                 todo = form.save(commit=False)
                 todo.user = request.user
                 todo.save()
+
+                files = request.FILES.getlist('files')
+                for f in files:
+                    if f:
+                        file_instance = UploadedFile(file=f)
+                        file_instance.save()
+                        todo.files.add(file_instance)
+
                 messages.success(request, 'Todo başarıyla oluşturuldu.')
                 return redirect('index')
+            else:
+                messages.error(request, "Formda hatalar var. Lütfen kontrol edin.")
         else:
             messages.info(request, "Bu işlemi gerçekleştirmek için lütfen önce giriş yapın!")
 
@@ -132,9 +143,18 @@ def update(request, Todos_id):
         todo_item = get_object_or_404(Todos, pk=Todos_id)
         if todo_item.user == request.user:
             if request.method == "POST":
-                form = ListForm(request.POST, instance=todo_item)
+                form = ListForm(request.POST, request.FILES, instance=todo_item)
                 if form.is_valid():
-                    form.save()
+
+                    todo_item = form.save()  
+
+                    files = request.FILES.getlist('files')
+                    for f in files:
+                        if f:
+                            file_instance = UploadedFile(file=f)
+                            file_instance.save()
+                            todo_item.files.add(file_instance)
+
                     messages.success(request, 'Todo başarıyla güncellendi.')
                     return redirect("index")
                 else:

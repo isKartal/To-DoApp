@@ -1,7 +1,7 @@
 {% extends "todo_app/base.html" %}
 
 {% block title %}
-  {{ todo.title }} Detaylar
+    {{ todo.title }} Detaylar
 {% endblock title %}
 
 {% block content %}
@@ -36,6 +36,18 @@
           No
         {% endif %}
       </p>
+
+    {% if todo.files.all %}
+      <p><strong>Attached Files:</strong></p>
+      <ul>
+        {% for file in todo.files.all %}
+          <li><a href="{{ file.file.url }}" target="_blank">{{ file.file.name }}</a></li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p><strong>Attached Files:</strong> No files uploaded.</p>
+    {% endif %}
+
     <a href="{% url 'index' %}" class="btn btn-primary">Return to Task List</a>
   </div>
 </div>
